@@ -1,0 +1,63 @@
+---
+import { FERRY } from '../data/ferry';
+import StatusBadge from './StatusBadge.astro';
+---
+<div class="space-y-6">
+  <!-- 票價 -->
+  <section id="fare" class="rounded-xl border border-sand-200 bg-white overflow-hidden">
+    <div class="bg-harbor-900 px-4 py-2.5 flex items-center justify-between">
+      <h2 class="text-sm font-bold text-sand-50">渡輪票價（單程）</h2>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-sand-100 text-ink-700">
+          <tr>
+            <th class="px-4 py-2 text-left font-semibold">票種</th>
+            <th class="px-4 py-2 text-left font-semibold">票價</th>
+            <th class="px-4 py-2 text-left font-semibold">說明</th>
+            <th class="px-4 py-2 text-left font-semibold">狀態</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-sand-200">
+          {FERRY.fares.map((f) => (
+            <tr>
+              <td class="px-4 py-2.5 font-medium text-harbor-900">{f.type}</td>
+              <td class="px-4 py-2.5 font-mono font-bold text-sunset-600">{f.price}</td>
+              <td class="px-4 py-2.5 text-ink-700">{f.note}</td>
+              <td class="px-4 py-2.5"><StatusBadge status={f.status} /></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="px-4 py-2 text-xs text-ink-700 bg-sand-50">付款方式：{FERRY.payment.value}．{FERRY.payment.note}</p>
+  </section>
+
+  <!-- 時刻與航程 -->
+  <section id="schedule" class="grid gap-4 sm:grid-cols-3">
+    {[
+      { label: '航程時間', value: FERRY.duration.value, status: FERRY.duration.status, note: undefined as string | undefined },
+      { label: '班距', value: FERRY.headway.value, status: FERRY.headway.status, note: FERRY.headway.note as string | undefined },
+      { label: '營運時間', value: FERRY.hours.value, status: FERRY.hours.status, note: FERRY.hours.note as string | undefined },
+    ].map((x) => (
+      <div class="rounded-xl border border-sand-200 bg-white p-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-ink-700">{x.label}</h3>
+          <StatusBadge status={x.status} />
+        </div>
+        <p class="mt-1.5 font-bold text-harbor-900">{x.value}</p>
+        {x.note && <p class="mt-1 text-xs text-ink-700">{x.note}</p>}
+      </div>
+    ))}
+  </section>
+
+  <!-- 規則 -->
+  <section class="rounded-xl border border-sand-200 bg-white p-5">
+    <h2 class="text-sm font-bold text-harbor-900 mb-3">搭乘規則（行人、腳踏車、機車）</h2>
+    <ul class="space-y-2 text-sm text-ink-900">
+      {FERRY.rules.map((r) => (
+        <li class="flex gap-2"><span class="text-sea-500 shrink-0">•</span><span>{r}</span></li>
+      ))}
+    </ul>
+  </section>
+</div>

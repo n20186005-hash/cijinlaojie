@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import credits from '../data/image-credits.json';
+
+const crumbs = [
+  { name: '首頁', href: '/' },
+  { name: '圖片來源與授權', href: '/credits/' },
+];
+
+const entries = Object.values(credits as Record<string, {
+  file: string; title: string; licence: string; author: string; source?: string;
+}>);
+---
+<BaseLayout
+  title="圖片來源與授權"
+  description="本站使用之圖片來源與授權說明，包含 Wikimedia Commons 授權照片與本站製作的 AI 生成餐點示意圖。"
+  breadcrumbs={crumbs}
+>
+  <div class="mx-auto max-w-3xl px-4 py-8">
+    <h1 class="text-3xl font-bold text-harbor-900">圖片來源與授權</h1>
+    <p class="mt-3 text-ink-700 leading-relaxed">
+      景點與街景照片來自 <a href="https://commons.wikimedia.org/" rel="noopener" target="_blank" class="text-sea-700 underline underline-offset-2">Wikimedia Commons</a>，
+      採用公眾領域（Public Domain / CC0）或創用 CC 授權；餐點圖片為本站依品項特徵製作的 AI 生成示意圖，
+      不代表特定店家實際出餐。以下逐圖標示來源與素材類型。
+    </p>
+
+    <div class="mt-6 overflow-x-auto">
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="bg-sand-100 text-ink-700">
+            <th class="border border-sand-200 px-3 py-2 text-left">預覽</th>
+            <th class="border border-sand-200 px-3 py-2 text-left">標題</th>
+            <th class="border border-sand-200 px-3 py-2 text-left">作者</th>
+            <th class="border border-sand-200 px-3 py-2 text-left">授權</th>
+            <th class="border border-sand-200 px-3 py-2 text-left">出處</th>
+          </tr>
+        </thead>
+        <tbody>
+          {entries.map((c) => (
+            <tr>
+              <td class="border border-sand-200 px-3 py-2">
+                <img src={c.file} alt="" width="80" height="53" loading="lazy" class="rounded object-cover aspect-[3/2]" />
+              </td>
+              <td class="border border-sand-200 px-3 py-2 text-ink-900">{c.title.replace(/^File:/, '')}</td>
+              <td class="border border-sand-200 px-3 py-2 text-ink-700">{c.author}</td>
+              <td class="border border-sand-200 px-3 py-2 text-ink-700">{c.licence}</td>
+              <td class="border border-sand-200 px-3 py-2">
+                {c.source
+                  ? <a href={c.source} rel="noopener nofollow" target="_blank" class="text-sea-700 underline underline-offset-2">原始頁面</a>
+                  : <span class="text-ink-700">本站製作</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</BaseLayout>

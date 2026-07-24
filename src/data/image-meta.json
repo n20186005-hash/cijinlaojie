@@ -1,0 +1,102 @@
+{
+  "cihou-fort": {
+    "w": 1600,
+    "h": 1067,
+    "ratio": 1.5
+  },
+  "cihou-lighthouse": {
+    "w": 1600,
+    "h": 1067,
+    "ratio": 1.5
+  },
+  "cijin-beach": {
+    "w": 1600,
+    "h": 1067,
+    "ratio": 1.5
+  },
+  "cijin-ferry": {
+    "w": 1600,
+    "h": 1200,
+    "ratio": 1.3333
+  },
+  "cijin-old-street": {
+    "w": 1600,
+    "h": 1200,
+    "ratio": 1.3333
+  },
+  "cijin-seaside-park": {
+    "w": 1600,
+    "h": 1067,
+    "ratio": 1.5
+  },
+  "cijin-sunset": {
+    "w": 1600,
+    "h": 1200,
+    "ratio": 1.3333
+  },
+  "cijin-tianhou-temple": {
+    "w": 1536,
+    "h": 1024,
+    "ratio": 1.5
+  },
+  "cijin-view": {
+    "w": 1600,
+    "h": 1063,
+    "ratio": 1.5047
+  },
+  "grilled-squid": {
+    "w": 1536,
+    "h": 1024,
+    "ratio": 1.5
+  },
+  "kaohsiung-harbour": {
+    "w": 1600,
+    "h": 1067,
+    "ratio": 1.5
+  },
+  "rainbow-church": {
+    "w": 1600,
+    "h": 1067,
+    "ratio": 1.5
+  },
+  "seafood-noodles": {
+    "w": 1536,
+    "h": 1024,
+    "ratio": 1.5
+  },
+  "seafood-restaurants": {
+    "w": 1536,
+    "h": 1024,
+    "ratio": 1.5
+  },
+  "seafood": {
+    "w": 1600,
+    "h": 1036,
+    "ratio": 1.5447
+  },
+  "star-tunnel": {
+    "w": 1600,
+    "h": 2562,
+    "ratio": 0.6246
+  },
+  "sweet-potato-balls": {
+    "w": 1536,
+    "h": 1024,
+    "ratio": 1.5
+  },
+  "swordfish-oden": {
+    "w": 1536,
+    "h": 1024,
+    "ratio": 1.5
+  },
+  "tomato-plate": {
+    "w": 1536,
+    "h": 1024,
+    "ratio": 1.5
+  },
+  "windmill-park": {
+    "w": 1600,
+    "h": 1200,
+    "ratio": 1.3333
+  }
+}

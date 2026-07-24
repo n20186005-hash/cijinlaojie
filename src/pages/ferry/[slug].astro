@@ -1,0 +1,61 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import QuickAnswer from '../../components/QuickAnswer.astro';
+import FerryData from '../../components/FerryData.astro';
+import SourceList from '../../components/SourceList.astro';
+
+export async function getStaticPaths() {
+  const items = await getCollection('ferry', ({ data }) => !data.draft);
+  return items.map((item) => ({ params: { slug: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const d = item.data;
+const { Content } = await render(item);
+const showData = item.id === 'fare' || item.id === 'schedule';
+
+const crumbs = [
+  { name: '首頁', href: '/' },
+  { name: '渡輪交通', href: '/ferry/' },
+  { name: d.title, href: `/ferry/${item.id}/` },
+];
+
+const jsonLd = d.quickAnswer ? [{
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [{
+    '@type': 'Question',
+    name: d.title,
+    acceptedAnswer: { '@type': 'Answer', text: d.quickAnswer },
+  }],
+}] : [];
+---
+<BaseLayout title={d.title} description={d.quickAnswer || d.summary} breadcrumbs={crumbs} jsonLd={jsonLd}>
+  <article class="mx-auto max-w-3xl px-4 py-6">
+    <header class="mb-6">
+      <p class="text-sm font-semibold text-sunset-600">渡輪交通</p>
+      <h1 class="mt-1 text-3xl font-bold text-harbor-900">{d.title}</h1>
+    </header>
+
+    {d.quickAnswer && (
+      <QuickAnswer>{d.quickAnswer}</QuickAnswer>
+    )}
+
+    <div class="prose-cijin mt-8 max-w-none">
+      <Content />
+    </div>
+
+    {showData && (
+      <section class="mt-8">
+        <FerryData />
+      </section>
+    )}
+
+    <SourceList sources={d.sources} lastChecked={d.lastChecked} />
+
+    <div class="mt-8">
+      <a href="/ferry/" class="text-sm font-semibold text-sea-700 hover:text-sea-500">← 渡輪完整指南</a>
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FerryData from '../../components/FerryData.astro';
+import QuickAnswer from '../../components/QuickAnswer.astro';
+import { FERRY } from '../../data/ferry';
+
+const subpages = (await getCollection('ferry', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+
+const crumbs = [
+  { name: '首頁', href: '/' },
+  { name: '渡輪交通', href: '/ferry/' },
+];
+---
+<BaseLayout
+  title="旗津渡輪完整指南：票價、時刻與搭乘規則"
+  description="鼓山－旗津渡輪票價、時刻與班距、悠遊卡付款、腳踏車與機車載運、連假管制一次看懂。實際班次以高雄市輪船公司公告為準。"
+  breadcrumbs={crumbs}
+>
+  <div class="mx-auto max-w-4xl px-4 py-8">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold text-harbor-900">旗津渡輪完整指南</h1>
+      <p class="mt-3 text-ink-700 leading-relaxed">
+        {FERRY.route}是前往旗津老街最主要的方式，也是旗津居民的通勤路線。以下整理票價、時刻、
+        付款與搭乘規則。
+      </p>
+    </header>
+
+    <div class="mb-6 rounded-lg border border-sunset-500/40 bg-sunset-500/5 px-4 py-3 text-sm text-ink-900">
+      <p>實際班次及管制以<a href={FERRY.official.url} rel="nofollow noopener" target="_blank" class="text-sea-700 underline underline-offset-2">{FERRY.official.name}</a>現場與最新公告為準。</p>
+    </div>
+
+    <div class="mb-8">
+      <QuickAnswer question="旗津渡輪怎麼搭？票價多少？">
+        從鼓山（哈瑪星）輪渡站搭船前往旗津，航程約 5–10 分鐘，單程全票約 NT$30，
+        可用悠遊卡、一卡通或現金。腳踏車、機車皆可載運，連假機車常有管制。
+      </QuickAnswer>
+    </div>
+
+    <FerryData />
+
+    <section class="mt-10">
+      <h2 class="text-xl font-bold text-harbor-900 mb-4">渡輪常見問題</h2>
+      <div class="grid gap-3 sm:grid-cols-2">
+        {subpages.map((p) => (
+          <a href={`/ferry/${p.id}/`} class="block rounded-lg border border-sand-200 bg-white p-4 hover:border-sea-400 hover:shadow-sm transition">
+            <h3 class="font-semibold text-harbor-900">{p.data.title}</h3>
+            <p class="mt-1 text-sm text-ink-700 line-clamp-2">{p.data.summary}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+  </div>
+</BaseLayout>

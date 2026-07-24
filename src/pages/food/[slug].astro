@@ -1,0 +1,56 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Pic from '../../components/Pic.astro';
+import SourceList from '../../components/SourceList.astro';
+import { abs } from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const items = await getCollection('food', ({ data }) => !data.draft);
+  return items.map((item) => ({ params: { slug: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const d = item.data;
+const { Content } = await render(item);
+
+const crumbs = [
+  { name: '首頁', href: '/' },
+  { name: '老街美食', href: '/food/' },
+  { name: d.name, href: `/food/${item.id}/` },
+];
+
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: `${d.name}｜旗津老街美食`,
+  image: abs(d.image),
+  description: d.summary,
+  datePublished: d.lastChecked,
+  dateModified: d.lastChecked,
+  author: { '@type': 'Organization', name: '旗津老街' },
+  publisher: { '@type': 'Organization', name: '旗津老街' },
+}];
+---
+<BaseLayout title={`旗津${d.name}`} description={d.summary} image={d.image} breadcrumbs={crumbs} jsonLd={jsonLd}>
+  <article class="mx-auto max-w-3xl px-4 py-6">
+    <header class="mb-6">
+      <p class="text-sm font-semibold text-sunset-600">旗津老街美食</p>
+      <h1 class="mt-1 text-3xl font-bold text-harbor-900">{d.name}</h1>
+      <p class="mt-3 text-lg text-ink-700 leading-relaxed">{d.summary}</p>
+      {d.priceRange && <p class="mt-2 text-sm font-semibold text-sea-700">參考價位：{d.priceRange}</p>}
+    </header>
+
+    <Pic src={d.image} alt={d.imageAlt} class="w-full rounded-xl object-cover aspect-[3/2] shadow-sm" eager aspect="3/2" />
+
+    <div class="prose-cijin mt-8 max-w-none">
+      <Content />
+    </div>
+
+    <SourceList sources={d.sources} lastChecked={d.lastChecked} />
+
+    <div class="mt-8">
+      <a href="/food/" class="text-sm font-semibold text-sea-700 hover:text-sea-500">← 所有老街美食</a>
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,51 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import QuickAnswer from '../../components/QuickAnswer.astro';
+import SourceList from '../../components/SourceList.astro';
+
+export async function getStaticPaths() {
+  const items = await getCollection('guides', ({ data }) => !data.draft && data.section === 'transport');
+  return items.map((item) => ({ params: { slug: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const d = item.data;
+const { Content } = await render(item);
+
+const crumbs = [
+  { name: '首頁', href: '/' },
+  { name: '交通與停車', href: '/transport/' },
+  { name: d.title, href: `/transport/${item.id}/` },
+];
+
+const jsonLd = d.quickAnswer ? [{
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [{
+    '@type': 'Question',
+    name: d.title,
+    acceptedAnswer: { '@type': 'Answer', text: d.quickAnswer },
+  }],
+}] : [];
+---
+<BaseLayout title={d.title} description={d.quickAnswer || d.summary} breadcrumbs={crumbs} jsonLd={jsonLd}>
+  <article class="mx-auto max-w-3xl px-4 py-6">
+    <header class="mb-6">
+      <p class="text-sm font-semibold text-sunset-600">交通與停車</p>
+      <h1 class="mt-1 text-3xl font-bold text-harbor-900">{d.title}</h1>
+    </header>
+
+    {d.quickAnswer && <QuickAnswer>{d.quickAnswer}</QuickAnswer>}
+
+    <div class="prose-cijin mt-8 max-w-none">
+      <Content />
+    </div>
+
+    <SourceList sources={d.sources} lastChecked={d.lastChecked} />
+
+    <div class="mt-8">
+      <a href="/transport/" class="text-sm font-semibold text-sea-700 hover:text-sea-500">← 交通與停車</a>
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,21 @@
+---
+interface Source { name: string; url?: string }
+// lastChecked 保留為選填參數以相容呼叫端，但不再顯示具體核對日期
+interface Props { sources?: Source[]; lastChecked?: string }
+const { sources = [] } = Astro.props;
+---
+{sources.length > 0 && (
+  <aside class="mt-8 rounded-lg border border-sand-200 bg-sand-100 px-4 py-3 text-sm">
+    <p class="font-semibold text-harbor-900 mb-1">資料來源</p>
+    <ul class="mt-1 space-y-0.5 text-ink-700">
+      {sources.map((s) => (
+        <li>
+          來源：
+          {s.url ? (
+            <a href={s.url} rel="nofollow noopener" target="_blank" class="text-sea-700 underline underline-offset-2">{s.name}</a>
+          ) : s.name}
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}

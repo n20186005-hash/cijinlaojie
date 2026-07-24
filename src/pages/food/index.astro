@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Card from '../../components/Card.astro';
+
+const items = (await getCollection('food', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+
+const crumbs = [
+  { name: '首頁', href: '/' },
+  { name: '老街美食', href: '/food/' },
+];
+---
+<BaseLayout
+  title="旗津老街美食完整指南"
+  description="旗津老街必吃美食整理：旗魚黑輪、碳烤小卷、番薯椪、海產米粉、番茄切盤與海鮮料理，含參考價位與點餐提醒。"
+  breadcrumbs={crumbs}
+>
+  <div class="mx-auto max-w-6xl px-4 py-8">
+    <header class="mb-8 max-w-2xl">
+      <h1 class="text-3xl font-bold text-harbor-900">旗津老街美食</h1>
+      <p class="mt-3 text-ink-700 leading-relaxed">
+        旗津緊鄰漁港，老街以海味小吃聞名。以下整理旗津必吃的六類美食與點餐提醒；
+        海鮮多依重量計價，點餐前記得先確認單價。
+      </p>
+    </header>
+
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((item) => (
+        <Card
+          href={`/food/${item.id}/`}
+          title={item.data.name}
+          subtitle={item.data.summary}
+          image={item.data.image}
+          imageAlt={item.data.imageAlt}
+          meta={item.data.priceRange && `參考價位：${item.data.priceRange}`}
+        />
+      ))}
+    </div>
+
+    <p class="mt-8 text-sm text-ink-700">
+      本站不複製 Google 地圖評論、不使用未經授權的顧客照片，也不會將付費排名包裝成「編輯第一名」。
+      特約店家會明確標示「合作店家」。
+    </p>
+  </div>
+</BaseLayout>

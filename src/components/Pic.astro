@@ -1,0 +1,39 @@
+---
+import meta from '../data/image-meta.json';
+
+interface Props {
+  /** 例：/images/cijin-old-street.jpg 或 cijin-old-street */
+  src: string;
+  alt: string;
+  class?: string;
+  sizes?: string;
+  /** 首屏圖用 eager，其餘 lazy */
+  eager?: boolean;
+  /** 覆寫顯示比例，例如 "3/2" */
+  aspect?: string;
+}
+
+const { src, alt, class: cls = '', sizes = '(max-width: 768px) 100vw, 768px', eager = false, aspect } = Astro.props;
+
+const slug = src.replace(/^.*\/images\//, '').replace(/\.[a-z]+$/i, '');
+const info = (meta as Record<string, { w: number; h: number }>)[slug];
+const jpg = `/images/${slug}.jpg`;
+const has1600 = info && info.w >= 1600;
+const srcset = has1600
+  ? `/images/${slug}-800.webp 800w, /images/${slug}-1600.webp 1600w`
+  : `/images/${slug}-800.webp 800w`;
+---
+<picture>
+  <source type="image/webp" srcset={srcset} sizes={sizes} />
+  <img
+    src={jpg}
+    alt={alt}
+    width={info?.w}
+    height={info?.h}
+    class={cls}
+    style={aspect ? `aspect-ratio:${aspect}` : undefined}
+    loading={eager ? 'eager' : 'lazy'}
+    decoding={eager ? 'sync' : 'async'}
+    fetchpriority={eager ? 'high' : undefined}
+  />
+</picture>

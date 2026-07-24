@@ -1,0 +1,232 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Pic from '../components/Pic.astro';
+import Section from '../components/Section.astro';
+import Card from '../components/Card.astro';
+import { FERRY } from '../data/ferry';
+import { UPDATES } from '../data/updates';
+import { WALK_LEGS } from '../data/places';
+import { abs } from '../lib/seo';
+
+const foods = (await getCollection('food', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order).slice(0, 6);
+const attractions = (await getCollection('attractions', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+const itineraries = (await getCollection('itinerary', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+
+const routeCards = ['2-hours', 'half-day', 'one-day', 'sunset']
+  .map((id) => itineraries.find((i) => i.id === id))
+  .filter(Boolean) as typeof itineraries;
+
+const quickFacts = [
+  { label: '門票', value: '免費' },
+  { label: '建議時間', value: '老街約 1–2 小時' },
+  { label: '交通', value: '鼓山輪渡站搭船' },
+  { label: '適合時段', value: '下午至傍晚' },
+  { label: '主要區域', value: '廟前路、天后宮周邊' },
+  { label: '適合對象', value: '親子、長輩、朋友' },
+];
+
+const quickLinks = [
+  { label: '第一次去旗津', href: '/transport/how-to-get-there/' },
+  { label: '旗津老街吃什麼', href: '/food/' },
+  { label: '渡輪票價與時刻', href: '/ferry/' },
+  { label: '旗津半日遊', href: '/itinerary/half-day/' },
+  { label: '旗津一日遊', href: '/itinerary/one-day/' },
+  { label: '旗津景點地圖', href: '/map/' },
+];
+
+// 依距離分組（步行）周邊景點
+const nearGroups = [
+  { title: '步行 5 分鐘內', ids: ['cijin-tianhou-temple'] },
+  { title: '步行 15 分鐘內', ids: ['cijin-beach', 'star-tunnel', 'rainbow-church'] },
+  { title: '需要爬坡', ids: ['cihou-fort', 'cihou-lighthouse'] },
+  { title: '需要騎車', ids: ['windmill-park'] },
+];
+
+const latest = UPDATES.slice(0, 4);
+
+const jsonLd = [{
+  '@context': 'https://schema.org',
+  '@type': 'TouristAttraction',
+  name: '旗津老街',
+  alternateName: 'Cijin Old Street',
+  description: '旗津老街位於高雄旗津輪渡站附近，以旗津天后宮、海鮮餐廳與傳統小吃聞名。',
+  image: abs('/images/cijin-old-street.jpg'),
+  address: { '@type': 'PostalAddress', addressLocality: '高雄市旗津區', streetAddress: '廟前路', addressCountry: 'TW' },
+  geo: { '@type': 'GeoCoordinates', latitude: 22.6149, longitude: 120.2699 },
+  isAccessibleForFree: true,
+}];
+---
+<BaseLayout
+  title="旗津老街｜必吃美食、渡輪交通、景點與一日遊攻略"
+  description="旗津老街怎麼去？整理旗津老街美食、渡輪票價與時刻、停車場、旗津天后宮、旗后燈塔、星空隧道，以及2小時、半日與一日遊行程。"
+  bareTitle
+  jsonLd={jsonLd}
+>
+  <!-- Hero -->
+  <section class="relative">
+    <Pic src="/images/cijin-old-street.jpg" alt="旗津老街廟前路兩側的小吃攤與店家" eager
+      class="absolute inset-0 h-full w-full object-cover" sizes="100vw" />
+    <div class="absolute inset-0 bg-gradient-to-t from-harbor-900/90 via-harbor-900/55 to-harbor-900/35"></div>
+    <div class="relative mx-auto max-w-6xl px-4 py-20 sm:py-28">
+      <div class="max-w-2xl">
+        <h1 class="text-4xl sm:text-5xl font-bold text-white drop-shadow">旗津老街</h1>
+        <p class="mt-3 text-lg sm:text-xl text-sand-100">美食、渡輪、景點與一日遊指南</p>
+        <p class="mt-4 text-sand-100/90 leading-relaxed max-w-xl">
+          旗津老街位於高雄旗津輪渡站附近，是旗津最熱鬧的觀光街區。從鼓山搭渡輪抵達後，
+          可以逛天后宮、品嚐旗魚黑輪、烤小卷與番薯椪，再步行前往海水浴場、星空隧道與旗后燈塔。
+        </p>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href="/food/" class="rounded-lg bg-sunset-500 px-5 py-3 font-bold text-white shadow-lg hover:bg-sunset-600 transition">查看老街美食</a>
+          <a href="/itinerary/" class="rounded-lg bg-white px-5 py-3 font-bold text-harbor-900 shadow-lg hover:bg-sand-100 transition">規劃一日遊</a>
+          <a href="/ferry/" class="rounded-lg border-2 border-white/80 px-5 py-3 font-bold text-white hover:bg-white/10 transition">查詢渡輪交通</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 快速資訊卡 -->
+  <section class="mx-auto max-w-6xl px-4 -mt-8 relative z-10">
+    <div class="rounded-2xl border border-sand-200 bg-white shadow-md p-5">
+      <dl class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        {quickFacts.map((f) => (
+          <div>
+            <dt class="text-xs text-ink-700">{f.label}</dt>
+            <dd class="mt-0.5 font-bold text-harbor-900 text-sm">{f.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <!-- 快速入口 -->
+  <section class="mx-auto max-w-6xl px-4 mt-8">
+    <div class="flex flex-wrap gap-2.5">
+      {quickLinks.map((l) => (
+        <a href={l.href} class="rounded-full border border-sand-200 bg-white px-4 py-2 text-sm font-semibold text-harbor-900 hover:border-sea-400 hover:text-sea-700 transition">
+          {l.label}
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- 選擇遊玩時間 -->
+  <Section title="你有多少時間？" subtitle="依停留時間挑一條路線，直接看時間表" href="/itinerary/" class="mt-12">
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {routeCards.map((r) => (
+        <Card
+          href={`/itinerary/${r.id}/`}
+          title={r.data.title}
+          subtitle={r.data.summary}
+          image={r.data.image}
+          imageAlt={r.data.imageAlt}
+          badge={r.data.duration}
+        />
+      ))}
+    </div>
+  </Section>
+
+  <!-- 老街必吃 -->
+  <Section title="老街必吃" subtitle="旗津緊鄰漁港，海味小吃是必嚐" href="/food/" class="mt-14">
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {foods.map((f) => (
+        <Card
+          href={`/food/${f.id}/`}
+          title={f.data.name}
+          subtitle={f.data.summary}
+          image={f.data.image}
+          imageAlt={f.data.imageAlt}
+          meta={f.data.priceRange && `參考價位：${f.data.priceRange}`}
+        />
+      ))}
+    </div>
+  </Section>
+
+  <!-- 周邊景點（依距離） -->
+  <Section title="周邊景點" subtitle="依與輪渡站的距離安排，比排名更實用" href="/attractions/" class="mt-14">
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      {nearGroups.map((g) => (
+        <div>
+          <h3 class="mb-3 inline-block rounded-full bg-harbor-900 px-3 py-1 text-xs font-bold text-sand-50">{g.title}</h3>
+          <ul class="space-y-2">
+            {g.ids.map((id) => {
+              const a = attractions.find((x) => x.id === id);
+              return a ? (
+                <li>
+                  <a href={`/attractions/${a.id}/`} class="block rounded-lg border border-sand-200 bg-white px-3 py-2 hover:border-sea-400 hover:shadow-sm transition">
+                    <span class="font-semibold text-harbor-900 text-sm">{a.data.name}</span>
+                    {a.data.distanceFromFerry && <span class="block text-xs text-ink-700 mt-0.5">距輪渡站 {a.data.distanceFromFerry}</span>}
+                  </a>
+                </li>
+              ) : null;
+            })}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- 渡輪交通 -->
+  <Section title="渡輪交通" subtitle="從鼓山搭船 5–10 分鐘就到旗津" href="/ferry/" class="mt-14">
+    <div class="grid gap-5 lg:grid-cols-3">
+      <div class="lg:col-span-2 rounded-xl border border-sand-200 bg-white p-5">
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div><p class="text-xs text-ink-700">全票單程</p><p class="mt-0.5 font-bold text-sunset-600 font-mono">{FERRY.fares[0].price}</p></div>
+          <div><p class="text-xs text-ink-700">航程</p><p class="mt-0.5 font-bold text-harbor-900">{FERRY.duration.value}</p></div>
+          <div><p class="text-xs text-ink-700">付款</p><p class="mt-0.5 font-bold text-harbor-900 text-sm">悠遊卡／一卡通</p></div>
+          <div><p class="text-xs text-ink-700">出發</p><p class="mt-0.5 font-bold text-harbor-900 text-sm">鼓山輪渡站</p></div>
+        </div>
+        <p class="mt-4 text-sm text-ink-700">
+          腳踏車、機車皆可載運，連假機車常有管制。實際班次以官方公告為準。
+        </p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm">
+          <a href="/ferry/fare/" class="font-semibold text-sea-700 hover:text-sea-500">票價明細 →</a>
+          <a href="/ferry/schedule/" class="font-semibold text-sea-700 hover:text-sea-500">時刻與班距 →</a>
+          <a href="/ferry/scooter/" class="font-semibold text-sea-700 hover:text-sea-500">機車搭船 →</a>
+        </div>
+      </div>
+      <div class="rounded-xl border border-sand-200 bg-white p-5">
+        <h3 class="text-sm font-bold text-harbor-900 mb-3">抵達後步行時間</h3>
+        <ul class="space-y-2 text-sm">
+          {WALK_LEGS.map((leg) => (
+            <li class="flex items-center justify-between">
+              <span class="text-ink-900">{leg.from} → {leg.to}</span>
+              <span class="font-semibold text-sea-700 text-xs">{leg.time}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <!-- 最新更新 -->
+  <Section title="最新資訊" subtitle="出發前先看看有沒有變化" href="/updates/" class="mt-14 mb-4">
+    <div class="grid gap-4 sm:grid-cols-2">
+      {latest.map((u) => (
+        <div class="rounded-xl border border-sand-200 bg-white p-4">
+          <div class="flex items-center gap-2">
+            <span class="rounded-full bg-harbor-900 px-2 py-0.5 text-[11px] font-bold text-sand-50">{u.tag}</span>
+            <time datetime={u.date} class="text-xs font-mono text-ink-700">{u.date.replaceAll('-', '/')}</time>
+          </div>
+          <h3 class="mt-2 font-semibold text-harbor-900 text-sm">{u.title}</h3>
+          <p class="mt-1 text-sm text-ink-700 line-clamp-2">{u.detail}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- 品牌介紹 + 核對 -->
+  <section class="mx-auto max-w-6xl px-4 mt-10">
+    <div class="rounded-2xl bg-sea-500/10 border border-sea-400/30 p-6 sm:p-8">
+      <h2 class="text-xl font-bold text-harbor-900">從渡輪下船，開始玩旗津。</h2>
+      <p class="mt-3 text-ink-700 leading-relaxed max-w-3xl">
+        旗津老街是一個專注於高雄旗津旅遊的繁體中文指南，整理老街美食、渡輪交通、景點開放資訊、
+        停車方式，以及 2 小時、半日與一日遊行程。我們把距離、步行時間、坡度與價格做成可查詢的資料，
+        讓你到了現場也能快速找到答案。
+      </p>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,15 @@
+---
+import { STATUS_LABEL, type FactStatus } from '../data/ferry';
+interface Props { status: FactStatus }
+const { status } = Astro.props;
+const colors: Record<FactStatus, string> = {
+  'verified': 'bg-sea-500/15 text-sea-700',
+  'needs-review': 'bg-sunset-500/15 text-sunset-600',
+  'temporarily-closed': 'bg-temple-500/15 text-temple-600',
+  'seasonal': 'bg-harbor-500/15 text-harbor-700',
+  'unknown': 'bg-ink-700/10 text-ink-700',
+};
+---
+<span class={`inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${colors[status]}`}>
+  {STATUS_LABEL[status]}
+</span>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cijinlaojie.com/sitemap-index.xml

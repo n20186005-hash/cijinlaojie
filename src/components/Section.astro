@@ -1,0 +1,24 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  href?: string;
+  linkText?: string;
+  class?: string;
+}
+const { title, subtitle, href, linkText = '看更多', class: cls = '' } = Astro.props;
+---
+<section class={`mx-auto max-w-6xl px-4 ${cls}`}>
+  <div class="flex items-end justify-between gap-4 mb-5">
+    <div>
+      <h2 class="text-2xl font-bold text-harbor-900">{title}</h2>
+      {subtitle && <p class="mt-1 text-sm text-ink-700">{subtitle}</p>}
+    </div>
+    {href && (
+      <a href={href} class="shrink-0 text-sm font-semibold text-sea-700 hover:text-sea-500 whitespace-nowrap">
+        {linkText} →
+      </a>
+    )}
+  </div>
+  <slot />
+</section>

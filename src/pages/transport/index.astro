@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const items = (await getCollection('guides', ({ data }) => !data.draft && data.section === 'transport'))
+  .sort((a, b) => a.data.order - b.data.order);
+
+const crumbs = [
+  { name: '首頁', href: '/' },
+  { name: '交通與停車', href: '/transport/' },
+];
+---
+<BaseLayout
+  title="旗津交通與停車：怎麼去、停車與租車"
+  description="旗津怎麼去、停車場、腳踏車租借完整整理。搭渡輪、走過港隧道、從高鐵左營與高雄車站出發的方式一次看懂。"
+  breadcrumbs={crumbs}
+>
+  <div class="mx-auto max-w-4xl px-4 py-8">
+    <header class="mb-8 max-w-2xl">
+      <h1 class="text-3xl font-bold text-harbor-900">交通與停車</h1>
+      <p class="mt-3 text-ink-700 leading-relaxed">
+        怎麼到旗津、要不要開車、停哪裡、要不要租腳踏車？這裡整理最實用的交通資訊。
+        渡輪票價與時刻請見<a href="/ferry/" class="text-sea-700 underline underline-offset-2">渡輪完整指南</a>。
+      </p>
+    </header>
+
+    <div class="space-y-3">
+      {items.map((item) => (
+        <a href={`/transport/${item.id}/`} class="block rounded-xl border border-sand-200 bg-white p-5 hover:border-sea-400 hover:shadow-sm transition">
+          <h2 class="font-bold text-harbor-900">{item.data.title}</h2>
+          <p class="mt-1 text-sm text-ink-700">{item.data.summary}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

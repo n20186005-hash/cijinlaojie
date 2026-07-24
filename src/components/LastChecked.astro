@@ -1,0 +1,13 @@
+---
+interface Props { date: string; class?: string }
+const { date, class: cls = '' } = Astro.props;
+// date: YYYY-MM-DD -> 民國式：2026年7月24日
+const [y, m, d] = date.split('-');
+const text = `${y}年${Number(m)}月${Number(d)}日`;
+---
+<p class={`inline-flex items-center gap-1.5 text-xs text-ink-700 ${cls}`}>
+  <svg class="h-3.5 w-3.5 text-sea-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+  資料最後核對：<time datetime={date}>{text}</time>
+</p>

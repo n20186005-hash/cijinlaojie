@@ -1,0 +1,44 @@
+---
+import Logo from './Logo.astro';
+import { FOOTER_LINKS, SITE } from '../config';
+const year = new Date().getFullYear();
+---
+<footer class="mt-16 bg-harbor-900 text-sand-100">
+  <div class="mx-auto max-w-6xl px-4 py-12">
+    <div class="grid gap-10 md:grid-cols-5">
+      <div class="md:col-span-1">
+        <div class="bg-sand-50 rounded-lg px-3 py-2 inline-block">
+          <Logo />
+        </div>
+        <p class="mt-4 text-sm text-harbor-100 leading-relaxed">
+          {SITE.tagline}
+        </p>
+        <p class="mt-2 text-xs text-harbor-200">
+          從渡輪下船，開始玩旗津。
+        </p>
+      </div>
+
+      {FOOTER_LINKS.map((group) => (
+        <div>
+          <h2 class="text-sm font-bold text-white mb-3">{group.title}</h2>
+          <ul class="space-y-2">
+            {group.items.map((item) => (
+              <li>
+                <a href={item.href} class="text-sm text-harbor-100 hover:text-white hover:underline underline-offset-2">
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-10 pt-6 border-t border-harbor-700 text-xs text-harbor-200 flex flex-wrap items-center justify-between gap-3">
+      <p class="text-harbor-300">
+        © {year} 旗津老街（Cijinlaojie.com）．{SITE.englishName}
+      </p>
+      <a href="/credits/" class="underline underline-offset-2 hover:text-white">圖片來源與授權</a>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,104 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { SITE } from '../config';
+import { abs, siteJsonLd, breadcrumbJsonLd, type Crumb } from '../lib/seo';
+
+interface Props {
+  title: string;
+  description: string;
+  /** 頁面 OG 圖（相對或絕對路徑） */
+  image?: string;
+  /** 麵包屑；首頁留空 */
+  breadcrumbs?: Crumb[];
+  /** 額外的 JSON-LD 物件（Article / TouristAttraction / Event 等） */
+  jsonLd?: Record<string, any>[];
+  /** 是否在標題後附加站名 */
+  bareTitle?: boolean;
+  articleType?: boolean;
+}
+
+const {
+  title,
+  description,
+  image = SITE.defaultOgImage,
+  breadcrumbs = [],
+  jsonLd = [],
+  bareTitle = false,
+} = Astro.props;
+
+const fullTitle = bareTitle ? title : `${title}｜${SITE.name}`;
+const canonical = new URL(Astro.url.pathname, SITE.url).href;
+const ogImage = abs(image);
+
+const structured = [
+  ...siteJsonLd(),
+  ...(breadcrumbs.length ? [breadcrumbJsonLd(breadcrumbs)] : []),
+  ...jsonLd,
+].filter(Boolean);
+---
+
+<!doctype html>
+<html lang={SITE.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#123b55" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={SITE.ogLocale} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {structured.map((obj) => (
+      <script type="application/ld+json" is:inline set:html={JSON.stringify(obj)} />
+    ))}
+
+    {SITE.ga4Id && (
+      <script async is:inline src={`https://www.googletagmanager.com/gtag/js?id=${SITE.ga4Id}`}></script>
+      <script is:inline define:vars={{ id: SITE.ga4Id }}>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', id);
+      </script>
+    )}
+  </head>
+  <body class="min-h-screen flex flex-col bg-sand-50 text-ink-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:bg-white focus:px-4 focus:py-2 focus:rounded focus:shadow">跳到主要內容</a>
+    <Header />
+    <main id="main" class="flex-1">
+      {breadcrumbs.length > 0 && <Breadcrumb crumbs={breadcrumbs} />}
+      <slot />
+    </main>
+    <Footer />
+
+    {SITE.cfBeaconToken && (
+      <script
+        is:inline
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token": "${SITE.cfBeaconToken}"}`}
+      ></script>
+    )}
+  </body>
+</html>

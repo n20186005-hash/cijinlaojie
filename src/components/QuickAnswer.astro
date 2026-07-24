@@ -1,0 +1,9 @@
+---
+// 每頁先給直接答案（GEO / AI 搜尋優化）
+interface Props { question?: string }
+const { question } = Astro.props;
+---
+<div class="rounded-xl border-l-4 border-sunset-500 bg-white shadow-sm px-5 py-4">
+  {question && <p class="font-bold text-harbor-900 mb-1">{question}</p>}
+  <div class="text-ink-900 leading-relaxed"><slot /></div>
+</div>

@@ -1,0 +1,100 @@
+---
+import { PLACES, CATEGORY_LABELS, type PlaceCategory } from '../data/places';
+
+interface Props { compact?: boolean }
+const { compact = false } = Astro.props;
+
+const categoryColors: Record<PlaceCategory, string> = {
+  ferry: 'bg-harbor-900', attraction: 'bg-sea-500', food: 'bg-sunset-500',
+  toilet: 'bg-harbor-500', parking: 'bg-ink-700', bike: 'bg-temple-500', beach: 'bg-sea-400',
+};
+
+const filters = [
+  { key: 'all', label: '全部' },
+  { key: 'attraction', label: '景點' },
+  { key: 'food', label: '美食' },
+  { key: 'beach', label: '海灘' },
+  { key: 'toilet', label: '廁所' },
+  { key: 'parking', label: '停車場' },
+  { key: 'bike', label: '腳踏車' },
+  { key: 'sunset', label: '看夕陽' },
+  { key: 'stroller', label: '推車友善' },
+  { key: 'rainy', label: '雨天可去' },
+];
+
+const places = compact ? PLACES.filter((p) => p.href) : PLACES;
+---
+<div class="map-explorer">
+  <div class="flex flex-wrap gap-2 mb-5" role="group" aria-label="地圖篩選">
+    {filters.map((f) => (
+      <button
+        type="button"
+        data-filter={f.key}
+        class="filter-btn px-3 py-1.5 rounded-full text-sm font-semibold border border-sand-200 bg-white text-ink-700 hover:border-sea-400 transition-colors data-[active]:bg-harbor-900 data-[active]:text-sand-50 data-[active]:border-harbor-900"
+        data-active={f.key === 'all' ? '' : undefined}
+      >{f.label}</button>
+    ))}
+  </div>
+
+  <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" id="place-grid">
+    {places.map((p) => (
+      <article
+        class="place-card rounded-xl border border-sand-200 bg-white p-4 flex flex-col"
+        data-category={p.category}
+        data-sunset={p.sunset ? '1' : '0'}
+        data-stroller={p.strollerFriendly ? '1' : '0'}
+        data-rainy={p.rainyOk ? '1' : '0'}
+      >
+        <div class="flex items-center gap-2 mb-2">
+          <span class={`inline-block h-2.5 w-2.5 rounded-full ${categoryColors[p.category]}`}></span>
+          <span class="text-xs font-semibold text-ink-700">{CATEGORY_LABELS[p.category]}</span>
+        </div>
+        <h3 class="font-bold text-harbor-900 leading-snug">{p.name}</h3>
+        {p.englishName && <p class="text-xs text-ink-700">{p.englishName}</p>}
+        <dl class="mt-2 space-y-0.5 text-sm text-ink-700 flex-1">
+          {p.distanceFromFerry && <div>距輪渡站：{p.distanceFromFerry}</div>}
+          {p.walkTime && p.walkTime !== '—' && <div>{p.walkTime}</div>}
+          {p.suggestedDuration && <div>建議停留：{p.suggestedDuration}</div>}
+          {p.slope !== undefined && <div>{p.slope ? '需要爬坡' : '路面平坦'}</div>}
+          {p.nearby && <div>附近：{p.nearby}</div>}
+        </dl>
+        <div class="mt-3 flex items-center gap-3 text-sm">
+          {p.href && <a href={p.href} class="font-semibold text-sea-700 hover:text-sea-500">詳細介紹</a>}
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lng}`}
+            target="_blank" rel="noopener nofollow"
+            class="font-semibold text-sunset-600 hover:text-sunset-500"
+          >在地圖開啟</a>
+        </div>
+      </article>
+    ))}
+  </div>
+  <p id="no-result" class="hidden text-center text-ink-700 py-8">此篩選條件目前沒有地點。</p>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.map-explorer').forEach((mapEl) => {
+    const btns = mapEl.querySelectorAll<HTMLButtonElement>('.filter-btn');
+    const cards = mapEl.querySelectorAll<HTMLElement>('.place-card');
+    const noResult = mapEl.querySelector<HTMLElement>('#no-result');
+    btns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.filter!;
+        btns.forEach((b) => b.removeAttribute('data-active'));
+        btn.setAttribute('data-active', '');
+        let shown = 0;
+        cards.forEach((card) => {
+          let match = false;
+          if (key === 'all') match = true;
+          else if (key === 'sunset') match = card.dataset.sunset === '1';
+          else if (key === 'stroller') match = card.dataset.stroller === '1';
+          else if (key === 'rainy') match = card.dataset.rainy === '1';
+          else match = card.dataset.category === key;
+          card.style.display = match ? '' : 'none';
+          if (match) shown++;
+        });
+        if (noResult) noResult.classList.toggle('hidden', shown !== 0);
+      });
+    });
+  });
+</script>

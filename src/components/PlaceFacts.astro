@@ -1,0 +1,40 @@
+---
+// 景點實用資訊表（可複用事實區塊）
+interface Props {
+  openingHours?: string;
+  admission?: string;
+  address?: string;
+  suggestedDuration?: string;
+  distanceFromFerry?: string;
+  walkTime?: string;
+  slope?: string;
+  accessibility?: string;
+  bestTime?: string;
+}
+const p = Astro.props;
+const rows: [string, string | undefined][] = [
+  ['開放時間', p.openingHours],
+  ['門票', p.admission],
+  ['地址', p.address],
+  ['建議停留', p.suggestedDuration],
+  ['距離旗津輪渡站', p.distanceFromFerry],
+  ['交通方式', p.walkTime],
+  ['是否需要爬坡', p.slope],
+  ['最佳到訪時間', p.bestTime],
+  ['無障礙程度', p.accessibility],
+];
+const filled = rows.filter(([, v]) => v);
+---
+<div class="rounded-xl border border-sand-200 bg-white overflow-hidden">
+  <div class="bg-harbor-900 px-4 py-2.5">
+    <h2 class="text-sm font-bold text-sand-50">實用資訊</h2>
+  </div>
+  <dl class="divide-y divide-sand-200">
+    {filled.map(([k, v]) => (
+      <div class="grid grid-cols-3 gap-2 px-4 py-2.5 text-sm">
+        <dt class="col-span-1 text-ink-700 font-medium">{k}</dt>
+        <dd class="col-span-2 text-ink-900">{v}</dd>
+      </div>
+    ))}
+  </dl>
+</div>

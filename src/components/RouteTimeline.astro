@@ -1,0 +1,17 @@
+---
+interface Step { time: string; place: string; note?: string }
+interface Props { steps: Step[] }
+const { steps } = Astro.props;
+---
+<ol class="relative border-l-2 border-sea-400/40 ml-3 space-y-5">
+  {steps.map((s) => (
+    <li class="ml-6">
+      <span class="absolute -left-[9px] flex h-4 w-4 items-center justify-center rounded-full bg-sunset-500 ring-4 ring-sand-50"></span>
+      <div class="flex flex-wrap items-baseline gap-x-3">
+        <time class="font-mono text-sm font-bold text-harbor-900">{s.time}</time>
+        <span class="font-semibold text-ink-900">{s.place}</span>
+      </div>
+      {s.note && <p class="mt-0.5 text-sm text-ink-700">{s.note}</p>}
+    </li>
+  ))}
+</ol>

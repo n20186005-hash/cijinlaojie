@@ -1,0 +1,42 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Card from '../../components/Card.astro';
+
+const items = (await getCollection('itinerary', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+
+const crumbs = [
+  { name: '首頁', href: '/' },
+  { name: '行程規劃', href: '/itinerary/' },
+];
+---
+<BaseLayout
+  title="旗津行程規劃：2小時、半日、一日與夕陽路線"
+  description="依停留時間挑選旗津行程：2小時精華、半日遊、一日遊、夕陽路線與親子路線，每條路線附時間表、步行距離、坡度與預算。"
+  breadcrumbs={crumbs}
+>
+  <div class="mx-auto max-w-6xl px-4 py-8">
+    <header class="mb-8 max-w-2xl">
+      <h1 class="text-3xl font-bold text-harbor-900">行程規劃</h1>
+      <p class="mt-3 text-ink-700 leading-relaxed">
+        依你有多少時間、和誰同行來挑選路線。每條行程都附上明確的時間表、總步行距離、坡度與預算，
+        而不只是景點列表。
+      </p>
+    </header>
+
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((item) => (
+        <Card
+          href={`/itinerary/${item.id}/`}
+          title={item.data.title}
+          subtitle={item.data.summary}
+          image={item.data.image}
+          imageAlt={item.data.imageAlt}
+          badge={item.data.duration}
+          meta={[item.data.totalWalk, item.data.suitableFor].filter(Boolean).join('・')}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>
