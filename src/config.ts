@@ -14,7 +14,7 @@ export const SITE = {
   /** 設定後填入你的 Cloudflare Web Analytics token；留空則不載入 */
   cfBeaconToken: '',
   /** 或填入 GA4 評估 ID（G-XXXX）；留空則不載入 */
-  ga4Id: '',
+  ga4Id: 'G-HXM22WWPKP',
 } as const;
 
 export type NavItem = { label: string; href: string };
