@@ -19,6 +19,27 @@ export const SITE = {
 
 export type NavItem = { label: string; href: string };
 
+/** 旗津老街景點核心事實（唯一來源，詳見 Google 商家 / 地圖資訊） */
+export const ATTRACTION = {
+  name: '旗津老街',
+  englishName: 'Cijin Old Street',
+  description:
+    '旗津老街位於高雄旗津輪渡站附近，以旗津天后宮、現流海鮮與傳統小吃聞名，是旗津最熱鬧的觀光街區。',
+  image: '/images/cijin-old-street.jpg',
+  address: {
+    streetAddress: '廟前路',
+    addressLocality: '高雄市旗津區',
+    postalCode: '805',
+    addressCountry: 'TW',
+  },
+  geo: { latitude: 22.6149, longitude: 120.2699 },
+  telephone: '+886227016880',
+  plusCode: 'J779+8F 高雄市旗津區',
+  mapsUrl: 'https://maps.app.goo.gl/94fZpoRmL5YQmajc7',
+  rating: { value: 4.2, count: 27715 },
+  isAccessibleForFree: true,
+} as const;
+
 /** 頂欄六個主入口（不要超過六個） */
 export const NAV: NavItem[] = [
   { label: '老街美食', href: '/food/' },

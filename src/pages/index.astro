@@ -7,7 +7,9 @@ import Card from '../components/Card.astro';
 import { FERRY } from '../data/ferry';
 import { UPDATES } from '../data/updates';
 import { WALK_LEGS } from '../data/places';
-import { abs } from '../lib/seo';
+import { abs, touristAttractionJsonLd, faqPageJsonLd } from '../lib/seo';
+import { ATTRACTION } from '../config';
+import { FAQ } from '../data/faq';
 
 const foods = (await getCollection('food', ({ data }) => !data.draft))
   .sort((a, b) => a.data.order - b.data.order).slice(0, 6);
@@ -22,12 +24,16 @@ const routeCards = ['2-hours', 'half-day', 'one-day', 'sunset']
 
 const quickFacts = [
   { label: '門票', value: '免費' },
+  { label: '評價', value: `Google ${ATTRACTION.rating.value} 分 / ${ATTRACTION.rating.count.toLocaleString('zh-Hant-TW')} 則` },
   { label: '建議時間', value: '老街約 1–2 小時' },
   { label: '交通', value: '鼓山輪渡站搭船' },
   { label: '適合時段', value: '下午至傍晚' },
   { label: '主要區域', value: '廟前路、天后宮周邊' },
   { label: '適合對象', value: '親子、長輩、朋友' },
 ];
+
+// 首頁常見問題（同時產出 FAQPage 結構化資料，命中高曝光查詢）
+const homeFaq = FAQ.slice(0, 5);
 
 const quickLinks = [
   { label: '第一次去旗津', href: '/transport/how-to-get-there/' },
@@ -48,21 +54,14 @@ const nearGroups = [
 
 const latest = UPDATES.slice(0, 4);
 
-const jsonLd = [{
-  '@context': 'https://schema.org',
-  '@type': 'TouristAttraction',
-  name: '旗津老街',
-  alternateName: 'Cijin Old Street',
-  description: '旗津老街位於高雄旗津輪渡站附近，以旗津天后宮、海鮮餐廳與傳統小吃聞名。',
-  image: abs('/images/cijin-old-street.jpg'),
-  address: { '@type': 'PostalAddress', addressLocality: '高雄市旗津區', streetAddress: '廟前路', addressCountry: 'TW' },
-  geo: { '@type': 'GeoCoordinates', latitude: 22.6149, longitude: 120.2699 },
-  isAccessibleForFree: true,
-}];
+const jsonLd = [
+  touristAttractionJsonLd(),
+  faqPageJsonLd(homeFaq),
+];
 ---
 <BaseLayout
-  title="旗津老街｜必吃美食、渡輪交通、景點與一日遊攻略"
-  description="旗津老街怎麼去？整理旗津老街美食、渡輪票價與時刻、停車場、旗津天后宮、旗后燈塔、星空隧道，以及2小時、半日與一日遊行程。"
+  title="旗津老街（高雄）｜必吃美食地圖、渡輪時刻表與腳踏車租借攻略"
+  description="旗津老街怎麼去？整理高雄旗津老街必吃海鮮美食地圖、旗津渡輪時刻表與票價、腳踏車租借價格，以及海水浴場、旗后燈塔的一日遊行程，最新 2026 交通資訊一次看。"
   bareTitle
   jsonLd={jsonLd}
 >
@@ -214,6 +213,24 @@ const jsonLd = [{
           <h3 class="mt-2 font-semibold text-harbor-900 text-sm">{u.title}</h3>
           <p class="mt-1 text-sm text-ink-700 line-clamp-2">{u.detail}</p>
         </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- 常見問題 -->
+  <Section title="常見問題" subtitle="出發前先搞懂這幾件事" href="/faq/" class="mt-14">
+    <div class="space-y-3">
+      {homeFaq.map((f) => (
+        <details class="group rounded-xl border border-sand-200 bg-white p-5 open:shadow-sm">
+          <summary class="flex cursor-pointer items-center justify-between gap-4 font-bold text-harbor-900 list-none">
+            <span>{f.q}</span>
+            <svg class="h-5 w-5 shrink-0 text-sea-500 transition-transform group-open:rotate-45" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+          </summary>
+          <p class="mt-3 text-ink-700 leading-relaxed">{f.a}</p>
+          {f.href && <a href={f.href} class="mt-2 inline-block text-sm font-semibold text-sea-700 hover:text-sea-500">看詳細 →</a>}
+        </details>
       ))}
     </div>
   </Section>
